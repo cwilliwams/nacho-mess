@@ -9,10 +9,10 @@ image: python:latest
 pages:
   stage: deploy
   environment: production
-  script:
+  before_script:
     - cd dictionary/dictionary_generator
     - python build_dictionary.py
-    - cd ~
+  script:
     - mkdir .public
     - cp -r ./* .public
     - rm -rf public
