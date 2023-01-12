@@ -12,6 +12,9 @@ pages:
   before_script:
     - cd dictionary/dictionary_generator
     - python build_dictionary.py
+    - cd ../..
+    - pwd
+    - ls
   script:
     - mkdir .public
     - cp -r ./* .public
