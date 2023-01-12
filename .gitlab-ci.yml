@@ -9,7 +9,7 @@ pages:
   stage: deploy
   environment: production
   script:
-    - cd dictionary/dictionary/generator
+    - cd dictionary/dictionary_generator
     - python build_dictionary.py
     - cd ~
     - mkdir .public
