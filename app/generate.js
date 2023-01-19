@@ -233,6 +233,7 @@ window.onload = function() {
   this.document.getElementById("generate").setAttribute("onclick", "generateName()");
   this.document.getElementById("clear").setAttribute("onclick", "clearEntries()");
   this.document.getElementById("title-name").setAttribute("onmouseover", "genNewTitle()");
+  this.document.getElementById("customFile").setAttribute("onchange", "customFile(this)");
   genData();
   alliterative_check();
   realword_check();
@@ -266,5 +267,22 @@ function clearFirstLetters() {
   inputs = document.querySelectorAll("#first_two input");
   for (txtbox of inputs) {
     txtbox.value = "";
+  }
+}
+
+function customFile(t) {
+
+  var fr=new FileReader();
+            fr.onload=function(){         
+                  wordData[t.files[0].name] = fr.result.split("\n");
+            }
+              
+            fr.readAsText(t.files[0]);
+  for (select of document.querySelectorAll("select"))
+  {
+    new_option = document.createElement("option");
+    new_option.value = t.files[0].name;
+    new_option.innerText = upperFirst(t.files[0].name);
+    select.appendChild(new_option);
   }
 }
