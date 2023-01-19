@@ -8,6 +8,9 @@ pages:
   stage: deploy
   environment: production
   script:
+    - cd app/dictionary/dictionary_generator
+    - python3 build_dictionary.py
+    - cd ../../..
     - mkdir .public
     - cp -r ./app/* .public
     - rm -rf public
