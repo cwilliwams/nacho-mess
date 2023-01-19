@@ -1,0 +1,15 @@
+
+version: '3.4'
+
+services:
+  nacho:
+    image: nginx
+    container_name: nacho
+    hostname: nacho
+    restart: always
+    volumes:
+      - ./app:/usr/share/nginx/html
+    ports:
+      - 80:80
+      - 443:443
+
