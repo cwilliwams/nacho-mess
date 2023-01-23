@@ -189,7 +189,8 @@ function addNameToList(word) {
     new_name = word;
   } else {
     new_name =
-      word + " (" + (word.split(" ")[0].substring(0, 2) + word.split(" ")[1].substring(0, 2)).toUpperCase() + ")";
+      //word + " (" + (word.split(" ")[0].substring(0, 2) + word.split(" ")[1].substring(0, 2)).toUpperCase() + ")";
+      word + " (" + (word.split(" ")[0].substring(0, 2) + word.split(" ")[word.split(" ").length-1].substring(0, 2)).toUpperCase() + ")";
   }
   name_list = document.getElementById("name_list");
   for (item of name_list.children) {
@@ -274,7 +275,8 @@ function customFile(t) {
 
   var fr=new FileReader();
             fr.onload=function(){         
-                  wordData[t.files[0].name] = fr.result.split("\n");
+                  wordData[t.files[0].name] = fr.result.split("\r\n");
+                  console.log(fr.result);
             }
               
             fr.readAsText(t.files[0]);
