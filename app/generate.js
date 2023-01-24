@@ -60,7 +60,7 @@ function genCustomWord(speech, target) {
   if (speech != "random") {
     //Search and build letter arrays
     for (i = 0; i < wordData[speech].length; i++) {
-      if (wordData[speech][i].substring(0, target.length) == target) {
+      if (wordData[speech][i].substring(0, target.length).toUpperCase() == target.toUpperCase()) {
         customData.push(wordData[speech][i]);
       }
     }
@@ -136,15 +136,13 @@ function genData() {
 function genFullName() {
   select_options = document.querySelectorAll("#PartOfSpeech select");
   first_letters = document.querySelectorAll("#first_two input");
-  new_name = "";
+  new_name = [];
   for (x = 0; x < select_options.length; x++) {
     if (select_options[x][select_options[x].selectedIndex].value != "") {
-      new_name +=
-        upperFirst(genRandomWord(select_options[x][select_options[x].selectedIndex].value, first_letters[x].value)) +
-        " ";
+      new_name.push(upperFirst(genRandomWord(select_options[x][select_options[x].selectedIndex].value, first_letters[x].value)).trim());
     }
   }
-  return new_name.trim();
+  return new_name;
 }
 
 function genNewTitle() {
@@ -183,15 +181,18 @@ function generateRealWord() {
   addNameToList(word);
 }
 
-function addNameToList(word) {
+function addNameToList(words) {
   //These brackets are only displayed when user receives an error, so they wont want to populate a four letter short name in these cases
-  if (word.indexOf("[") > -1) {
-    new_name = word;
-  } else {
-    new_name =
-      //word + " (" + (word.split(" ")[0].substring(0, 2) + word.split(" ")[1].substring(0, 2)).toUpperCase() + ")";
-      word + " (" + (word.split(" ")[0].substring(0, 2) + word.split(" ")[word.split(" ").length-1].substring(0, 2)).toUpperCase() + ")";
-  }
+  // if (words.indexOf("[") > -1) {
+  //   new_name = words;
+  // } else {
+  //   new_name =
+  //     //word + " (" + (word.split(" ")[0].substring(0, 2) + word.split(" ")[1].substring(0, 2)).toUpperCase() + ")";
+  //     words + " (" + (words.split(" ")[0].substring(0, 2) + words.split(" ")[words.split(" ").length-1].substring(0, 2)).toUpperCase() + ")";
+  //     //word.replace("_"," ") + " (" + (word.split("_")[0].split(" ")[0].substring(0, 2) + word.split("_")[1].split(" ")[0].substring(0, 2)).toUpperCase() + ")";
+  // }
+  
+  new_name = words[0]+" "+words[1]+" (" + (words[0].split(" ")[0].substring(0,2)+words[1].split(" ")[0].substring(0, 2)).toUpperCase() + ")";
   name_list = document.getElementById("name_list");
   for (item of name_list.children) {
     item.className = "";
