@@ -165,8 +165,8 @@ function genMakeRealWord() {
 }
 
 function isRealWord(full_name) {
-  split = full_name.split(" ");
-  first_two = (split[0].substring(0, 2) + split[1].substring(0, 2)).toLowerCase();
+  //split = full_name.split(" ");
+  first_two = (full_name[0].substring(0, 2) + full_name[1].substring(0, 2)).toLowerCase();
   for (word in wordData) {
     if (wordData[word].indexOf(first_two) > -1) {
       return true;
@@ -219,8 +219,9 @@ function genRealWordAlliterative() {
 
 /* Returns true/false to identify two alliterative words. Pass full name including spaces */
 function isAlliterative(full_name) {
-  split = full_name.split(" ");
-  return split[0][0] == split[1][0];
+  // split = full_name.split(" ");
+  // return split[0][0] == split[1][0];\
+  return full_name[0][0] == full_name[1][0];
 }
 
 function clearEntries() {
@@ -277,7 +278,6 @@ function customFile(t) {
   var fr=new FileReader();
             fr.onload=function(){         
                   wordData[t.files[0].name] = fr.result.split("\r\n");
-                  console.log(fr.result);
             }
               
             fr.readAsText(t.files[0]);
