@@ -1,110 +1,735 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script type="text/javascript" src="jquery.min.js"></script>
-    <!-- Required meta tags -->
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="bootstrap.css" />
-    <script type="text/javascript" src="bootstrap.min.js"></script>
-    <script type="text/javascript" src="generate.js"></script>
-    <title>NAME Project Name Generator</title>
-  </head>
+    <title>NAME - Project Name Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <body style="margin-left: 5%; margin-right: 5%; background-color:lightsteelblue">
-    <nav class="navbar navbar-light bg-light">
-      <span class="h2 font-weight-bold" id="title-name">NACHO MESS</span>
-    </nav>
-    <br />
-    <div class="container-fluid">
-      <div class="row d-flex">
-        <!-- Generated name list (left 25% of the screen) -->
-        <div class="col-md-3">
-          <div class="jumbotron" style="background-color: #f8f9fa;">
-            <button class="float-right" id="clear" value="X" data-toggle="tooltip" title="Clear generated name list">
-              <img src="imgs/eraser.png" width="20" height="20" />
-            </button>
-            <h1 class="h4 text-center">Generated Names</h1>
-            <ul style="list-style-type: none;" id="name_list"></ul>
-          </div>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .title:hover {
+            transform: scale(1.05);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .generated-names {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .generated-names h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border: none;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .name-list {
+            list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .name-item {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .name-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        .name-item.latest {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .generator-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #4a5568;
+        }
+
+        .select-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        select {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.875rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25rem;
+            padding-right: 2.5rem;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .file-upload:hover .file-upload-label {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: #edf2f7;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #4ecdc4;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .input-field {
+            position: relative;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1.25rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(78, 205, 196, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #ffd89b, #19547b);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .select-group,
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #4ecdc4;
+            border-radius: 3px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #44a08d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title" id="title-name" onmouseover="genNewTitle()">NACHO MESS</h1>
+            <p class="subtitle">Generate creative project names with style</p>
         </div>
-        <!-- Generator settings area (right 75% of the screen) -->
-        <div class="col-md-9">
-          <div class="row">
-            <!--this is currently for formatting. I'm sure there is a better option but here we are.-->
-            <div class="col-md-2 bg-light"></div>
-            <div class="col-md-8 bg-light">
-              <h3>Generate Project Name</h3>
-              <hr />
-              <div id="PartOfSpeech">
-                <div>Select order you want words to be displayed</div>
-                <select> </select>
-                <select> </select>
-                <hr />
-              </div>
-              <!--look here**** https://www.geeksforgeeks.org/how-to-read-a-local-text-file-using-javascript/-->
-              <p>Click on the "Choose File" button to upload a personalized word file:</p>
-              <input type="file" id="customFile" >
-              <hr />
-              <div>
-                <input
-                  type="checkbox"
-                  id="alliterative"
-                  autocomplete="off"
-                  onclick="alliterative_check()"
-                  data-toggle="tooltip"
-                  title="Results in a project name where the first letter of both words are the same."
-                />
-                <label
-                  class="form-check-label"
-                  for="alliterative"
-                  data-toggle="tooltip"
-                  title="Results in a project name where the first letter of both words are the same."
-                  >Alliterative</label
-                >
-                <br />
-                <input
-                  type="checkbox"
-                  id="realWord"
-                  autocomplete="off"
-                  onclick="realword_check()"
-                  data-toggle="tooltip"
-                  title="Project names will result in a real dictionary word acronym. Ex: Supportable Reptile (SURE)"
-                />
-                <label
-                  class="form-check-label"
-                  for="realWord"
-                  data-toggle="tooltip"
-                  title="Project names will result in a real dictionary word acronym. Ex: Supportable Reptile (SURE)"
-                  >Generate real word</label
-                >
-              </div>
-              <div id="first_two">
-                <label for="first_two_letters">First Two Letters (first word)</label>
-                <input style="width: 35px" type="text" class="two_letters" id="custom1" maxlength="2" />
-                <br />
-                <label for="last_two_letters">First Two Letters (second word)</label>
-                <input style="width: 35px" type="text" class="two_letters" id="custom2" maxlength="2" />
-              </div>
-              <br />
-              <input type="button" class="btn-success" id="generate" value="Generate" />
-              <br />
+
+        <div class="main-grid">
+            <!-- Generated Names Section -->
+            <div class="card generated-names">
+                <h2>
+                    Generated Names
+                    <button class="clear-btn" id="clear" onclick="clearEntries()" title="Clear all names">
+                        ✕
+                    </button>
+                </h2>
+                <ul class="name-list scrollbar-thin" id="name_list">
+                    <div class="empty-state">Your generated names will appear here</div>
+                </ul>
             </div>
-            <!--this is currently for formatting. I'm sure there is a better option but here we are.-->
-            <div class="col-md-2 bg-light">
-              <p class="font-weight-bold">Useful Instructions:</p><hr>
-              <p>
-                User can select Alliterative, which will automatically enable generation of words which are alliterative
-                and also whose shortened forms (first two letters of each word combined) create 'real' words. <hr>Real,
-                non-alliterative words can be generated by only selecting the second checkbox. <hr>If neither checkbox is
-                selected, the user will be able to optionally enter the leading letters they wish to be used to generate
-                words. <hr>None of this is required and you can merely click Generate if your desires are less specific. <hr>Click the eraser button to clear your results if you wish.
-              </p>
+
+            <!-- Generator Settings -->
+            <div class="card generator-section">
+                <h2>Generate Project Name</h2>
+                
+                <div class="form-group" id="PartOfSpeech">
+                    <label>Select word types and order:</label>
+                    <div class="select-group">
+                        <select></select>
+                        <select></select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Custom Word File:</label>
+                    <div class="file-upload">
+                        <input type="file" id="customFile" onchange="customFile(this)">
+                        <label class="file-upload-label">
+                            📁 Choose File or Drag & Drop
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Generation Options:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="alliterative" onclick="alliterative_check()">
+                            <label for="alliterative">
+                                <strong>Alliterative</strong><br>
+                                <small>First letters match (e.g., "Super Spider")</small>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="realWord" onclick="realword_check()">
+                            <label for="realWord">
+                                <strong>Real Word Acronym</strong><br>
+                                <small>Acronym forms real word (e.g., "Smart Unit Real Estate" → SURE)</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="first_two">
+                    <label>Custom Starting Letters:</label>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <input type="text" maxlength="2" placeholder="AB" title="First two letters of first word">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" maxlength="2" placeholder="CD" title="First two letters of second word">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="generate-btn" id="generate" onclick="generateName()">
+                    ✨ Generate Name
+                </button>
+
+                <div class="instructions">
+                    <h3>💡 How to Use</h3>
+                    <p><strong>Alliterative:</strong> Creates names where both words start with the same letter, and the acronym forms a real word.</p>
+                    <p><strong>Real Word:</strong> Generates names whose acronym spells an actual dictionary word.</p>
+                    <p><strong>Custom Letters:</strong> Specify starting letters for each word when neither option is selected.</p>
+                    <p><strong>Custom Files:</strong> Upload your own word lists in .txt format for personalized results.</p>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </body>
+
+    <script>
+        // All your existing JavaScript functionality
+        function generateName() {
+            if (document.getElementById("alliterative").checked == true) {
+                return genRealWordAlliterative();
+            }
+            if (document.getElementById("realWord").checked == true) {
+                return generateRealWord();
+            }
+            return addNameToList(genFullName());
+        }
+
+        function upperFirst(word) {
+            if (word != undefined && word.length > 0) {
+                return word[0].toUpperCase() + word.substring(1);
+            }
+            return word != undefined ? word.toUpperCase() : word;
+        }
+
+        function dictionaryLoad(dictionary) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    wordData[dictionary] = this.responseText.split("\n");
+                }
+            };
+            xmlhttp.open("GET", "dictionary/" + dictionary + ".txt", true);
+            xmlhttp.send();
+        }
+
+        function genRandomWord(speech, beginning = "") {
+            if (beginning != "") {
+                return genCustomWord(speech, beginning);
+            }
+            if (speech != undefined && speech != "random") {
+                return wordData[speech][randomInt(wordData[speech].length)];
+            } else {
+                if (total_length == 0) {
+                    findTotalLength();
+                }
+                let idx = randomInt(total_length);
+                for (let key in wordData) {
+                    if (idx > wordData[key].length) {
+                        idx -= wordData[key].length;
+                    } else {
+                        return wordData[key][idx];
+                    }
+                }
+            }
+        }
+
+        function genCustomWord(speech, target) {
+            if (speech == undefined || speech == "") {
+                return "";
+            }
+            let customData = [];
+            if (speech != "random") {
+                for (let i = 0; i < wordData[speech].length; i++) {
+                    if (wordData[speech][i].substring(0, target.length).toUpperCase() == target.toUpperCase()) {
+                        customData.push(wordData[speech][i]);
+                    }
+                }
+            } else {
+                if (total_length == 0) {
+                    findTotalLength();
+                }
+                for (let key in wordData) {
+                    for (let i = 0; i < wordData[key].length; i++) {
+                        if (wordData[key][i].substring(0, target.length) == target) {
+                            customData.push(wordData[key][i]);
+                        }
+                    }
+                }
+            }
+            if (customData.length == 0) {
+                return "['" + target + "' does not exist in " + speech + " list]";
+            } else {
+                return customData[randomInt(customData.length)];
+            }
+        }
+
+        let wordData = {};
+        let total_length = 0;
+
+        function findTotalLength() {
+            total_length = 0;
+            for (let key in wordData) {
+                total_length += wordData[key].length;
+            }
+        }
+
+        function randomInt(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function genData() {
+            let dictionary_list = ["random", "noun", "verb", "adjective", "animal", "adverb"];
+            let default_selected_list = ["adjective", "animal"];
+            let selector_list = document.querySelectorAll("#PartOfSpeech select");
+            
+            for (let cur_selector of selector_list) {
+                for (let cur_dictionary of dictionary_list) {
+                    let new_option = document.createElement("option");
+                    new_option.value = cur_dictionary;
+                    new_option.innerText = upperFirst(cur_dictionary);
+                    cur_selector.appendChild(new_option);
+                }
+            }
+            
+            for (let cur_dictionary of dictionary_list) {
+                if (cur_dictionary != "random") {
+                    wordData[cur_dictionary] = [];
+                    dictionaryLoad(cur_dictionary);
+                }
+            }
+            
+            for (let x = 0; x < selector_list.length; x++) {
+                for (let opts of selector_list[x]) {
+                    if (opts.value == default_selected_list[x]) {
+                        opts.selected = true;
+                    }
+                }
+            }
+        }
+
+        function genFullName() {
+            let select_options = document.querySelectorAll("#PartOfSpeech select");
+            let first_letters = document.querySelectorAll("#first_two input");
+            let new_name = [];
+            for (let x = 0; x < select_options.length; x++) {
+                if (select_options[x][select_options[x].selectedIndex].value != "") {
+                    new_name.push(upperFirst(genRandomWord(select_options[x][select_options[x].selectedIndex].value, first_letters[x].value)).trim());
+                }
+            }
+            return new_name;
+        }
+
+        function genNewTitle() {
+            let select_options = ["adjective", "animal"];
+            let first_letters = ["na", "me"];
+            let new_name = "";
+            for (let x = 0; x < select_options.length; x++) {
+                new_name += upperFirst(genRandomWord(select_options[x], first_letters[x])) + " ";
+            }
+            document.getElementById("title-name").innerText = new_name.trim().toUpperCase();
+        }
+
+        function genMakeRealWord() {
+            while (true) {
+                let curName = genFullName();
+                if (isRealWord(curName)) {
+                    return curName;
+                }
+            }
+        }
+
+        function isRealWord(full_name) {
+            let first_two = (full_name[0].substring(0, 2) + full_name[1].substring(0, 2)).toLowerCase();
+            for (let word in wordData) {
+                if (wordData[word].indexOf(first_two) > -1) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function generateRealWord() {
+            let word = genMakeRealWord();
+            addNameToList(word);
+        }
+
+        function addNameToList(words) {
+            // Remove empty state if it exists
+            const emptyState = document.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            let new_name = words[0] + " " + words[1] + " (" + (words[0].substring(0,2) + words[1].substring(0, 2)).toUpperCase() + ")";
+            let name_list = document.getElementById("name_list");
+            
+            // Remove latest class from previous items
+            for (let item of name_list.children) {
+                item.classList.remove("latest");
+            }
+            
+            let newli = document.createElement("li");
+            newli.className = "name-item latest";
+            newli.innerText = new_name;
+            newli.onclick = function() {
+                navigator.clipboard.writeText(new_name).then(() => {
+                    this.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+                    setTimeout(() => {
+                        this.style.background = 'linear-gradient(135deg, #ff6b6b, #ee5a52)';
+                    }, 500);
+                });
+            };
+            
+            name_list.insertBefore(newli, name_list.firstChild);
+        }
+
+        function genRealWordAlliterative() {
+            while (true) {
+                let curName = genMakeRealWord();
+                if (isAlliterative(curName)) {
+                    return addNameToList(curName);
+                }
+            }
+        }
+
+        function isAlliterative(full_name) {
+            return full_name[0][0] == full_name[1][0];
+        }
+
+        function clearEntries() {
+            let nameList = document.querySelectorAll("#name_list li");
+            if (nameList.length === 0) return;
+            
+            let verify = confirm("Are you sure you want to clear all " + nameList.length + " entries?");
+            if (verify == true) {
+                document.querySelector("#name_list").innerHTML = '<div class="empty-state">Your generated names will appear here</div>';
+            }
+        }
+
+        function alliterative_check() {
+            let chk = document.getElementById("alliterative").checked;
+            document.getElementById("first_two").style.display = chk ? "none" : "block";
+
+            if (chk == true) {
+                document.getElementById("realWord").checked = true;
+                document.getElementById("realWord").disabled = true;
+                clearFirstLetters();
+            } else {
+                document.getElementById("realWord").disabled = false;
+                document.getElementById("realWord").checked = false;
+            }
+        }
+
+        function realword_check() {
+            let chk = document.getElementById("realWord").checked;
+            document.getElementById("first_two").style.display = chk ? "none" : "block";
+            if (chk == true) {
+                clearFirstLetters();
+            }
+        }
+
+        function clearFirstLetters() {
+            let inputs = document.querySelectorAll("#first_two input");
+            for (let txtbox of inputs) {
+                txtbox.value = "";
+            }
+        }
+
+        function customFile(t) {
+            var fr = new FileReader();
+            fr.onload = function() {         
+                wordData[t.files[0].name] = fr.result.split("\r\n");
+            }
+            fr.readAsText(t.files[0]);
+            
+            for (let select of document.querySelectorAll("select")) {
+                let new_option = document.createElement("option");
+                new_option.value = t.files[0].name;
+                new_option.innerText = upperFirst(t.files[0].name);
+                select.appendChild(new_option);
+            }
+        }
+
+        // Initialize when page loads
+        window.onload = function() {
+            genData();
+            alliterative_check();
+            realword_check();
+        };
+    </script>
+</body>
 </html>
